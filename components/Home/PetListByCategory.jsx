@@ -18,13 +18,27 @@ export default function PetListByCategory() {
   */ 
   const GetPetList=async(category)=>{
     setLoader(true)
-      setPetList([]);
-      const q=query(collection(db,'Pets'),where('category','==',category));
-      const querySnapshot=await getDocs(q);
 
-      querySnapshot.forEach(doc=>{
-        setPetList(petList=>[...petList,doc.data()])
-      })
+      setPetList([]);
+
+      const q             = query(collection(db,'Pets'),where('category','==',category));
+      const querySnapshot = await getDocs(q);
+
+      // método menos eficiente para criar nova lista de pets
+      // querySnapshot.forEach(doc=>{
+      //   console.log(doc.id);
+      //   setPetList(petList=>[...petList,doc.data()])
+      // });
+
+      const newPetList = querySnapshot.docs.map(doc => ({
+        ...doc.data(),
+        id: doc.id // garante que o id seja incluído no objeto exatamente como id de controle do firebase
+      }));
+
+      console.log(newPetList);
+
+      setPetList(newPetList);
+
       setLoader(false);
   }
 
